@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="legal_case_rule_user" model="ir.rule">
+        <field name="name">Legal Case: User Access</field>
+        <field name="model_id" ref="model_legal_case"/>
+        <field name="domain_force">[
+            '|',
+            ('responsible_lawyer_id.user_ids', 'in', [user.id]),
+            ('member_ids', 'in', [user.id])
+        ]</field>
+        <field name="groups" eval="[(4, ref('legal_case_management.group_legal_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="legal_case_rule_manager" model="ir.rule">
+        <field name="name">Legal Case: Manager Access</field>
+        <field name="model_id" ref="model_legal_case"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('legal_case_management.group_legal_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="legal_hearing_rule_user" model="ir.rule">
+        <field name="name">Legal Hearing: User Access</field>
+        <field name="model_id" ref="model_legal_hearing"/>
+        <field name="domain_force">[
+            '|',
+            ('responsible_lawyer_id.user_ids', 'in', [user.id]),
+            ('case_id.member_ids', 'in', [user.id])
+        ]</field>
+        <field name="groups" eval="[(4, ref('legal_case_management.group_legal_user'))]"/>
+    </record>
+
+    <record id="legal_hearing_rule_manager" model="ir.rule">
+        <field name="name">Legal Hearing: Manager Access</field>
+        <field name="model_id" ref="model_legal_hearing"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('legal_case_management.group_legal_manager'))]"/>
+    </record>
+</odoo>

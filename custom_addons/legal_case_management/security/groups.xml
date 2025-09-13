@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define module category first -->
+    <record id="module_category_legal" model="ir.module.category">
+        <field name="name">Legal</field>
+        <field name="description">Manage legal cases and related activities</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <!-- Define user group -->
+    <record id="group_legal_user" model="res.groups">
+        <field name="name">Legal User</field>
+        <field name="category_id" ref="module_category_legal"/>
+        <field name="comment">Legal User can create and edit cases they own, create hearings and documents, create draft invoices.</field>
+    </record>
+
+    <!-- Define manager group -->
+    <record id="group_legal_manager" model="res.groups">
+        <field name="name">Legal Manager</field>
+        <field name="category_id" ref="module_category_legal"/>
+        <field name="implied_ids" eval="[(4, ref('group_legal_user'))]"/>
+        <field name="comment">Legal Manager can see all cases, close cases, approve invoices.</field>
+    </record>
+</odoo>

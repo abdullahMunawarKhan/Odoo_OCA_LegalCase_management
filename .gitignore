@@ -1,0 +1,47 @@
+# Odoo Core
+/odoo/
+
+# Configuration files
+/odoo.conf
+
+# Python virtual environment
+/venv/
+
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log files
+*.log
+
+# Database files
+*.sqlite
+*.db
+
+# Environment files
+.env
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.bak
+*.tmp
+
+# Local development settings
+local_settings.py
+
+# Compiled translations
+*.mo
+
+# Backup files
+*.bak
+*~

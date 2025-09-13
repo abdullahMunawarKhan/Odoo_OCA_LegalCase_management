@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Legal Hearing List View -->
+    <record id="legal_hearing_tree_view" model="ir.ui.view">
+        <field name="name">legal.hearing.tree</field>
+        <field name="model">legal.hearing</field>
+        <field name="arch" type="xml">
+            <list string="Legal Hearings" decoration-info="status == 'planned'" decoration-success="status == 'held'" decoration-warning="status == 'adjourned'" decoration-danger="status == 'cancelled'">
+                <field name="name"/>
+                <field name="case_id"/>
+                <field name="client_id"/>
+                <field name="responsible_lawyer_id"/>
+                <field name="date_start"/>
+                <field name="location"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Legal Hearing Form View -->
+    <record id="legal_hearing_form_view" model="ir.ui.view">
+        <field name="name">legal.hearing.form</field>
+        <field name="model">legal.hearing</field>
+        <field name="arch" type="xml">
+            <form string="Legal Hearing">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="case_id"/>
+                            <field name="client_id" readonly="1"/>
+                            <field name="responsible_lawyer_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="location"/>
+                            <field name="status"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" placeholder="Hearing notes and observations..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Legal Hearing Calendar View -->
+    <record id="legal_hearing_calendar_view" model="ir.ui.view">
+        <field name="name">legal.hearing.calendar</field>
+        <field name="model">legal.hearing</field>
+        <field name="arch" type="xml">
+            <calendar string="Legal Hearings" date_start="date_start" mode="month">
+                <field name="name"/>
+                <field name="case_id"/>
+                <field name="location"/>
+                <field name="status"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Legal Hearing Search View -->
+    <record id="legal_hearing_search_view" model="ir.ui.view">
+        <field name="name">legal.hearing.search</field>
+        <field name="model">legal.hearing</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="case_id"/>
+                <field name="client_id"/>
+                <field name="responsible_lawyer_id"/>
+                <field name="location"/>
+                <separator/>
+                <filter name="my_hearings" string="My Hearings" domain="[('responsible_lawyer_id.user_ids', 'in', [context.uid])]"/>
+                <filter name="planned" string="Planned" domain="[('status', '=', 'planned')]"/>
+                <filter name="this_week" string="This Week" domain="[('date_start', '&gt;=', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday())).date()), ('date_start', '&lt;=', (datetime.datetime.now() + datetime.timedelta(days=6-datetime.datetime.now().weekday())).date())]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_case" string="Case" context="{'group_by': 'case_id'}"/>
+                    <filter name="group_lawyer" string="Lawyer" context="{'group_by': 'responsible_lawyer_id'}"/>
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date_start'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Legal Hearing Action -->
+    <record id="legal_hearing_action" model="ir.actions.act_window">
+        <field name="name">Legal Hearings</field>
+        <field name="res_model">legal.hearing</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="legal_hearing_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Schedule your first hearing!
+            </p>
+            <p>
+                Keep track of all your court hearings and important meetings.
+                Link them to cases and track their status.
+            </p>
+        </field>
+    </record>
+</odoo>

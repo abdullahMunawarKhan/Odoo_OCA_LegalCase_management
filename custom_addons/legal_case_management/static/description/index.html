@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Case Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Welcome Page -->
+    <div id="welcome-page" class="welcome-container">
+        <header class="welcome-header">
+            <div class="container">
+                <div class="welcome-header-content">
+                    <div class="logo">
+                        <h1>Legal CMS</h1>
+                        <p>Professional Legal Case Management System</p>
+                    </div>
+                    <div class="auth-buttons">
+                        <button class="btn btn--secondary" onclick="showLogin()">Login</button>
+                        <button class="btn btn--primary" onclick="showSignup()">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Streamline Your Legal Practice</h2>
+                    <p>Manage cases, schedule hearings, track clients, and generate reports - all in one powerful platform designed for legal professionals.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn--primary btn--large" onclick="showSignup()">Get Started Free</button>
+                        <button class="btn btn--secondary btn--large" onclick="showLogin()">Login to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="container">
+                <h2 class="section-title">Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📁</div>
+                        <h3>Case Management</h3>
+                        <p>Efficiently organize and track all your legal cases with detailed information, status updates, and progress monitoring.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚖️</div>
+                        <h3>Hearing Scheduling</h3>
+                        <p>Schedule, track, and manage court hearings with calendar integration and automated reminders.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>Client Management</h3>
+                        <p>Maintain comprehensive client profiles with contact information, case history, and communication logs.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👨‍💼</div>
+                        <h3>Lawyer Profiles</h3>
+                        <p>Manage lawyer information, specializations, bar numbers, and case assignments in one centralized location.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Analytics & Reports</h3>
+                        <p>Generate detailed reports on case performance, financial summaries, and practice analytics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>Financial Tracking</h3>
+                        <p>Track case fees, payments, and financial performance with integrated billing management.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login-page" class="auth-page hidden">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to your Legal CMS account</p>
+                </div>
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember-me">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full">Sign In</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up here</a></p>
+                    <p><a href="#" onclick="showWelcome()">← Back to home</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Page -->
+    <div id="signup-page" class="auth-page hidden">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Create Account</h2>
+                    <p>Join Legal CMS to manage your legal practice</p>
+                </div>
+                <form id="signup-form" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signup-password">Password</label>
+                        <input type="password" id="signup-password" class="form-control" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" class="form-control" placeholder="Confirm your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="terms-agree" required>
+                            <span class="checkmark"></span>
+                            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full">Create Account</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" onclick="showLogin()">Sign in here</a></p>
+                    <p><a href="#" onclick="showWelcome()">← Back to home</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard-page" class="dashboard-container hidden">
+        <header class="dashboard-header">
+            <div class="container">
+                <div class="dashboard-header-content">
+                    <div class="logo">
+                        <h1>Legal CMS</h1>
+                    </div>
+                    <nav class="dashboard-nav">
+                        <ul>
+                            <li><a href="#" class="nav-link active" data-page="overview">Overview</a></li>
+                            <li><a href="#" class="nav-link" data-page="cases">Cases</a></li>
+                            <li><a href="#" class="nav-link" data-page="hearings">Hearings</a></li>
+                            <li><a href="#" class="nav-link" data-page="clients">Clients</a></li>
+                            <li><a href="#" class="nav-link" data-page="invoices">Invoices</a></li>
+                        </ul>
+                    </nav>
+                    <div class="user-menu">
+                        <span id="user-name">User Name</span>
+                        <button id="logout-btn" class="btn btn--text">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="container">
+                <!-- Dashboard Pages -->
+                <div id="dashboard-overview" class="dashboard-page active">
+                    <h2 class="page-title">Dashboard Overview</h2>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <h3>Active Cases</h3>
+                            <div class="stat-value" id="active-cases-count">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Upcoming Hearings</h3>
+                            <div class="stat-value" id="upcoming-hearings-count">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Clients</h3>
+                            <div class="stat-value" id="total-clients-count">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Pending Invoices</h3>
+                            <div class="stat-value" id="pending-invoices-count">0</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-charts">
+                        <div class="chart-container">
+                            <h3>Case Status Distribution</h3>
+                            <canvas id="case-status-chart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Monthly Activity</h3>
+                            <canvas id="monthly-activity-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div class="activity-feed" id="activity-feed">
+                            <!-- Activity items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dashboard-cases" class="dashboard-page">
+                    <div class="page-header">
+                        <h2 class="page-title">Case Management</h2>
+                        <button class="btn btn--primary" id="add-case-btn">Add New Case</button>
+                    </div>
+                    <div class="search-filter">
+                        <input type="text" id="case-search" class="search-input" placeholder="Search cases...">
+                        <select id="case-status-filter" class="filter-select">
+                            <option value="all">All Statuses</option>
+                            <option value="open">Open</option>
+                            <option value="pending">Pending</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table" id="cases-table">
+                            <thead>
+                                <tr>
+                                    <th>Case Number</th>
+                                    <th>Title</th>
+                                    <th>Client</th>
+                                    <th>Responsible Lawyer</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cases-list">
+                                <!-- Case items will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="dashboard-hearings" class="dashboard-page">
+                    <div class="page-header">
+                        <h2 class="page-title">Hearing Schedule</h2>
+                        <button class="btn btn--primary" id="add-hearing-btn">Schedule Hearing</button>
+                    </div>
+                    <div class="search-filter">
+                        <input type="text" id="hearing-search" class="search-input" placeholder="Search hearings...">
+                        <select id="hearing-filter" class="filter-select">
+                            <option value="all">All Hearings</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table" id="hearings-table">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Case</th>
+                                    <th>Court</th>
+                                    <th>Judge</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hearings-list">
+                                <!-- Hearing items will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="dashboard-clients" class="dashboard-page">
+                    <div class="page-header">
+                        <h2 class="page-title">Client Directory</h2>
+                        <button class="btn btn--primary" id="add-client-btn">Add New Client</button>
+                    </div>
+                    <div class="search-filter">
+                        <input type="text" id="client-search" class="search-input" placeholder="Search clients...">
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table" id="clients-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Active Cases</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-list">
+                                <!-- Client items will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="dashboard-invoices" class="dashboard-page">
+                    <div class="page-header">
+                        <h2 class="page-title">Invoice Management</h2>
+                        <button class="btn btn--primary" id="create-invoice-btn">Create Invoice</button>
+                    </div>
+                    <div class="search-filter">
+                        <input type="text" id="invoice-search" class="search-input" placeholder="Search invoices...">
+                        <select id="invoice-status-filter" class="filter-select">
+                            <option value="all">All Statuses</option>
+                            <option value="paid">Paid</option>
+                            <option value="pending">Pending</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table" id="invoices-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Client</th>
+                                    <th>Case</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoices-list">
+                                <!-- Invoice items will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

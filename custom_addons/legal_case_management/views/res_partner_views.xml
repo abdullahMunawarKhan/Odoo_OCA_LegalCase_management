@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Partner Form View for Legal Fields -->
+    <record id="res_partner_legal_form" model="ir.ui.view">
+        <field name="name">res.partner.legal.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Legal section before Internal Notes -->
+            <xpath expr="//field[@name='comment']" position="before">
+                <group string="Legal Information">
+                    <field name="is_lawyer"/>
+                    <field name="is_client"/>
+                    <field name="bar_number" invisible="not is_lawyer"/>
+                </group>
+            </xpath>
+            
+            <!-- Add Smart Buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="action_view_cases"
+                        icon="fa-briefcase"
+                        invisible="not is_lawyer and not is_client">
+                    <field string="Cases" name="case_count" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="action_view_hearings"
+                        icon="fa-gavel"
+                        invisible="not is_lawyer and not is_client">
+                    <field string="Hearings" name="hearing_count" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View Filter for Lawyers -->
+    <record id="view_partner_lawyer_tree" model="ir.ui.view">
+        <field name="name">res.partner.lawyer.tree</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='complete_name']" position="after">
+                <field name="is_lawyer"/>
+                <field name="is_client"/>
+                <field name="bar_number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search View with Filters -->
+    <record id="view_partner_legal_filter" model="ir.ui.view">
+        <field name="name">res.partner.legal.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='type_company']" position="after">
+                <filter string="Lawyers" name="lawyers" domain="[('is_lawyer', '=', True)]"/>
+                <filter string="Clients" name="clients" domain="[('is_client', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
+

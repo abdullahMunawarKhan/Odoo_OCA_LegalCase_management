@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="case_summary_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="case">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <h2 class="mt16 mb16">
+                                    <strong>Case Summary Report</strong>
+                                </h2>
+                            </div>
+                        </div>
+
+                        <!-- Case Header -->
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td><strong>Case Reference:</strong></td>
+                                        <td><span t-field="case.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Case Type:</strong></td>
+                                        <td><span t-field="case.case_type"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Status:</strong></td>
+                                        <td><span t-field="case.stage"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td><strong>Open Date:</strong></td>
+                                        <td><span t-field="case.open_date"/></td>
+                                    </tr>
+                                    <tr t-if="case.close_date">
+                                        <td><strong>Close Date:</strong></td>
+                                        <td><span t-field="case.close_date"/></td>
+                                    </tr>
+                                    <tr t-if="case.fixed_fee_amount">
+                                        <td><strong>Fixed Fee:</strong></td>
+                                        <td><span t-field="case.fixed_fee_amount" t-options="{'widget': 'monetary'}"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Parties Section -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h4><strong>Parties</strong></h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Name</th>
+                                            <th>Contact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Client</strong></td>
+                                            <td><span t-field="case.client_id.name"/></td>
+                                            <td>
+                                                <span t-field="case.client_id.email"/> 
+                                                <span t-if="case.client_id.phone"> | <span t-field="case.client_id.phone"/></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Responsible Lawyer</strong></td>
+                                            <td><span t-field="case.responsible_lawyer_id.name"/></td>
+                                            <td>
+                                                <span t-field="case.responsible_lawyer_id.email"/>
+                                                <span t-if="case.responsible_lawyer_id.phone"> | <span t-field="case.responsible_lawyer_id.phone"/></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Description Section -->
+                        <div class="row mt32" t-if="case.description">
+                            <div class="col-12">
+                                <h4><strong>Case Description</strong></h4>
+                                <p t-field="case.description"/>
+                            </div>
+                        </div>
+
+                        <!-- Hearings Section -->
+                        <div class="row mt32" t-if="case.hearing_ids">
+                            <div class="col-12">
+                                <h4><strong>Hearings</strong></h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Hearing Name</th>
+                                            <th>Date</th>
+                                            <th>Location</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="case.hearing_ids" t-as="hearing">
+                                            <td><span t-field="hearing.name"/></td>
+                                            <td><span t-field="hearing.date_start"/></td>
+                                            <td><span t-field="hearing.location"/></td>
+                                            <td><span t-field="hearing.status"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Documents Section -->
+                        <t t-set="attachments" t-value="case.env['ir.attachment'].search([('res_model', '=', 'legal.case'), ('res_id', '=', case.id)])"/>
+                        <div class="row mt32" t-if="attachments">
+                            <div class="col-12">
+                                <h4><strong>Documents</strong></h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Document Name</th>
+                                            <th>Upload Date</th>
+                                            <th>Size</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="attachments" t-as="attachment">
+                                            <td><span t-field="attachment.name"/></td>
+                                            <td><span t-field="attachment.create_date"/></td>
+                                            <td><span t-field="attachment.file_size" t-options="{'widget': 'integer'}"/> bytes</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

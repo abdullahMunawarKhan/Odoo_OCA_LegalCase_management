@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Legal Case List View -->
+    <record id="legal_case_tree_view" model="ir.ui.view">
+        <field name="name">legal.case.tree</field>
+        <field name="model">legal.case</field>
+        <field name="arch" type="xml">
+            <list string="Legal Cases" decoration-info="stage == 'intake'" decoration-success="stage == 'active'" decoration-muted="stage == 'closed'">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="responsible_lawyer_id"/>
+                <field name="case_type"/>
+                <field name="stage"/>
+                <field name="open_date"/>
+                <field name="next_hearing_date"/>
+                <field name="fixed_fee_amount"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Legal Case Form View -->
+    <record id="legal_case_form_view" model="ir.ui.view">
+        <field name="name">legal.case.form</field>
+        <field name="model">legal.case</field>
+        <field name="arch" type="xml">
+            <form string="Legal Case">
+                <header>
+                    <field name="stage" widget="statusbar" statusbar_visible="intake,active,closed"/>
+                    <button name="action_create_invoice" type="object" string="Create Invoice" class="btn-primary" invisible="fixed_fee_amount == 0"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_hearings" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="hearing_count" widget="statbutton" string="Hearings"/>
+                        </button>
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-money">
+                            <field name="invoice_count" widget="statbutton" string="Invoices"/>
+                        </button>
+                        <button name="action_view_attachments" type="object" class="oe_stat_button" icon="fa-files-o">
+                            <field name="attachment_count" widget="statbutton" string="Documents"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="client_id" domain="[('is_client', '=', True)]"/>
+                            <field name="responsible_lawyer_id" domain="[('is_lawyer', '=', True)]"/>
+                            <field name="member_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="case_type"/>
+                            <field name="open_date"/>
+                            <field name="close_date" invisible="stage != 'closed'"/>
+                            <field name="next_hearing_date"/>
+                        </group>
+                    </group>
+                    <group string="Financial Information">
+                        <group>
+                            <field name="fixed_fee_amount" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Case description and notes..."/>
+                        </page>
+                        <page string="Hearings" name="hearings">
+                            <field name="hearing_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="location"/>
+                                    <field name="status"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Legal Case Kanban View -->
+    <record id="legal_case_kanban_view" model="ir.ui.view">
+        <field name="name">legal.case.kanban</field>
+        <field name="model">legal.case</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="responsible_lawyer_id"/>
+                <field name="case_type"/>
+                <field name="stage"/>
+                <field name="next_hearing_date"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb4">
+                                <div class="o_kanban_record_headings mt4">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="o_kanban_record_row">
+                                    <strong>Client: </strong><field name="client_id"/>
+                                </div>
+                                <div class="o_kanban_record_row">
+                                    <strong>Lawyer: </strong><field name="responsible_lawyer_id"/>
+                                </div>
+                                <div class="o_kanban_record_row">
+                                    <strong>Type: </strong><field name="case_type"/>
+                                </div>
+                                <div class="o_kanban_record_row" t-if="record.next_hearing_date.raw_value">
+                                    <strong>Next Hearing: </strong><field name="next_hearing_date"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Legal Case Search View -->
+    <record id="legal_case_search_view" model="ir.ui.view">
+        <field name="name">legal.case.search</field>
+        <field name="model">legal.case</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="responsible_lawyer_id"/>
+                <field name="case_type"/>
+                <separator/>
+                <filter name="my_cases" string="My Cases" domain="[('responsible_lawyer_id.user_ids', 'in', [context.uid])]"/>
+                <filter name="active_cases" string="Active Cases" domain="[('stage', '=', 'active')]"/>
+                <filter name="closed_cases" string="Closed Cases" domain="[('stage', '=', 'closed')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_stage" string="Stage" context="{'group_by': 'stage'}"/>
+                    <filter name="group_lawyer" string="Lawyer" context="{'group_by': 'responsible_lawyer_id'}"/>
+                    <filter name="group_type" string="Case Type" context="{'group_by': 'case_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Legal Case Action -->
+    <record id="legal_case_action" model="ir.actions.act_window">
+        <field name="name">Legal Cases</field>
+        <field name="res_model">legal.case</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="search_view_id" ref="legal_case_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first legal case!
+            </p>
+            <p>
+                Track your legal cases from intake to resolution.
+                Manage clients, lawyers, hearings, and invoices all in one place.
+            </p>
+        </field>
+    </record>
+</odoo>

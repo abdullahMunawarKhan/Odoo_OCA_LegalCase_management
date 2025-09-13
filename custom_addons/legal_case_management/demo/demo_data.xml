@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demo Lawyers -->
+    <record id="partner_lawyer_smith" model="res.partner">
+        <field name="name">John Smith</field>
+        <field name="is_lawyer" eval="True"/>
+        <field name="email">john.smith@lawfirm.com</field>
+        <field name="phone">+1-555-0101</field>
+        <field name="bar_number">BAR12345</field>
+        <field name="street">123 Legal Street</field>
+        <field name="city">New York</field>
+        <field name="zip">10001</field>
+        <field name="country_id" ref="base.us"/>
+    </record>
+
+    <record id="partner_lawyer_jones" model="res.partner">
+        <field name="name">Sarah Jones</field>
+        <field name="is_lawyer" eval="True"/>
+        <field name="email">sarah.jones@lawfirm.com</field>
+        <field name="phone">+1-555-0102</field>
+        <field name="bar_number">BAR67890</field>
+        <field name="street">456 Justice Ave</field>
+        <field name="city">New York</field>
+        <field name="zip">10002</field>
+        <field name="country_id" ref="base.us"/>
+    </record>
+
+    <!-- Demo Clients -->
+    <record id="partner_client_brown" model="res.partner">
+        <field name="name">Michael Brown</field>
+        <field name="is_client" eval="True"/>
+        <field name="customer_rank">1</field>
+        <field name="email">michael.brown@email.com</field>
+        <field name="phone">+1-555-0201</field>
+        <field name="street">789 Client Road</field>
+        <field name="city">Brooklyn</field>
+        <field name="zip">11201</field>
+        <field name="country_id" ref="base.us"/>
+    </record>
+
+    <record id="partner_client_davis" model="res.partner">
+        <field name="name">Emily Davis</field>
+        <field name="is_client" eval="True"/>
+        <field name="customer_rank">1</field>
+        <field name="email">emily.davis@email.com</field>
+        <field name="phone">+1-555-0202</field>
+        <field name="street">321 Business Blvd</field>
+        <field name="city">Manhattan</field>
+        <field name="zip">10003</field>
+        <field name="country_id" ref="base.us"/>
+    </record>
+
+    <record id="partner_client_wilson" model="res.partner">
+        <field name="name">Robert Wilson</field>
+        <field name="is_client" eval="True"/>
+        <field name="customer_rank">1</field>
+        <field name="email">robert.wilson@email.com</field>
+        <field name="phone">+1-555-0203</field>
+        <field name="street">654 Consumer St</field>
+        <field name="city">Queens</field>
+        <field name="zip">11101</field>
+        <field name="country_id" ref="base.us"/>
+    </record>
+
+    <!-- Demo Cases -->
+    <record id="legal_case_001" model="legal.case">
+        <field name="name">CASE/2025/0001</field>
+        <field name="client_id" ref="partner_client_brown"/>
+        <field name="responsible_lawyer_id" ref="partner_lawyer_smith"/>
+        <field name="case_type">civil</field>
+        <field name="stage">active</field>
+        <field name="open_date" eval="(DateTime.today() - timedelta(days=30)).strftime('%Y-%m-%d')"/>
+        <field name="description">Contract dispute regarding service agreement terms and payment obligations.</field>
+        <field name="fixed_fee_amount">5000.00</field>
+    </record>
+
+    <record id="legal_case_002" model="legal.case">
+        <field name="name">CASE/2025/0002</field>
+        <field name="client_id" ref="partner_client_davis"/>
+        <field name="responsible_lawyer_id" ref="partner_lawyer_jones"/>
+        <field name="case_type">corporate</field>
+        <field name="stage">active</field>
+        <field name="open_date" eval="(DateTime.today() - timedelta(days=15)).strftime('%Y-%m-%d')"/>
+        <field name="description">Corporate merger and acquisition legal review and documentation.</field>
+        <field name="fixed_fee_amount">15000.00</field>
+    </record>
+
+    <record id="legal_case_003" model="legal.case">
+        <field name="name">CASE/2025/0003</field>
+        <field name="client_id" ref="partner_client_wilson"/>
+        <field name="responsible_lawyer_id" ref="partner_lawyer_smith"/>
+        <field name="case_type">property</field>
+        <field name="stage">closed</field>
+        <field name="open_date" eval="(DateTime.today() - timedelta(days=90)).strftime('%Y-%m-%d')"/>
+        <field name="close_date" eval="(DateTime.today() - timedelta(days=10)).strftime('%Y-%m-%d')"/>
+        <field name="description">Real estate transaction and title transfer documentation. Case successfully closed.</field>
+        <field name="fixed_fee_amount">3500.00</field>
+    </record>
+
+    <!-- Demo Hearings -->
+    <record id="legal_hearing_001" model="legal.hearing">
+        <field name="name">Initial Consultation - Brown Case</field>
+        <field name="case_id" ref="legal_case_001"/>
+        <field name="date_start" eval="(DateTime.now() + timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_end" eval="(DateTime.now() + timedelta(days=7, hours=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="location">Court Room A, NYC Civil Court</field>
+        <field name="status">planned</field>
+        <field name="notes">First hearing to discuss contract dispute details.</field>
+    </record>
+
+    <record id="legal_hearing_002" model="legal.hearing">
+        <field name="name">Document Review - Davis M&amp;A</field>
+        <field name="case_id" ref="legal_case_002"/>
+        <field name="date_start" eval="(DateTime.now() + timedelta(days=14)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_end" eval="(DateTime.now() + timedelta(days=14, hours=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="location">Conference Room B, Law Office</field>
+        <field name="status">planned</field>
+        <field name="notes">Review merger documentation with client and opposing counsel.</field>
+    </record>
+
+    <record id="legal_hearing_003" model="legal.hearing">
+        <field name="name">Final Settlement - Wilson Property</field>
+        <field name="case_id" ref="legal_case_003"/>
+        <field name="date_start" eval="(DateTime.now() - timedelta(days=15)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_end" eval="(DateTime.now() - timedelta(days=15, hours=-2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="location">Real Estate Office, Manhattan</field>
+        <field name="status">held</field>
+        <field name="notes">Final closing completed successfully. All documents signed.</field>
+    </record>
+</odoo>
