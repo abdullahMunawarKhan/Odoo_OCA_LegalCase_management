@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Legal Case Kanban with Stage Colors -->
+  <record id="view_legal_case_kanban" model="ir.ui.view">
+    <field name="name">legal.case.kanban</field>
+    <field name="model">legal.case</field>
+    <field name="arch" type="xml">
+      <kanban>
+        <field name="stage"/>
+        <field name="name"/>
+        <field name="client_id"/>
+        <templates>
+          <t t-name="kanban-box">
+            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.stage.raw_value)} o_kanban_record">
+              <div class="o_kanban_primary_bottom">
+                <div class="o_kanban_record_title">
+                  <field name="name"/>
+                </div>
+                <div><strong>Client:</strong> <field name="client_id"/></div>
+              </div>
+              <div class="o_kanban_secondary_bottom">
+                <div><field name="stage"/></div>
+              </div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <!-- Add Kanban to action if not existing -->
+  <record id="action_legal_case_kanban" model="ir.actions.act_window">
+    <field name="name">Cases Kanban</field>
+    <field name="res_model">legal.case</field>
+    <field name="view_mode">kanban,tree,form</field>
+    <field name="view_ids" eval="[(5,0,0),(0,0,{'view_mode':'kanban','view_id':ref('view_legal_case_kanban')})]"/>
+  </record>
+</odoo>

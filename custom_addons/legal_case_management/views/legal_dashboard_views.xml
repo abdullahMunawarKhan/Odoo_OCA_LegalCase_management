@@ -1,45 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Legal Case Dashboard Form View -->
-    <record id="legal_case_dashboard_form" model="ir.ui.view">
-        <field name="name">legal.case.dashboard.form</field>
-        <field name="model">board.board</field>
+    <!-- Legal Dashboard Kanban View -->
+    <record id="legal_dashboard_kanban" model="ir.ui.view">
+        <field name="name">legal.dashboard.kanban</field>
+        <field name="model">legal.case</field>
         <field name="arch" type="xml">
-            <form string="Legal Case Dashboard">
-                <board style="2-1">
-                    <column>
-                        <!-- Active Cases by Stage -->
-                        <action name="legal_case_management.legal_case_action" string="Active Cases" domain="[('stage', '=', 'active')]" view_mode="kanban,list" context="{'dashboard_view': 'active_cases'}"/>
-                        <!-- Upcoming Hearings -->
-                        <action name="legal_case_management.legal_hearing_action" string="Upcoming Hearings" domain="[('date_start', '>=', context_today().strftime('%Y-%m-%d'))]" view_mode="list"/>
-                    </column>
-                    <column>
-                        <!-- My Cases -->
-                        <action name="legal_case_management.legal_case_action" string="My Cases" domain="[('responsible_lawyer_id.user_ids', 'in', [context.uid])]" view_mode="list" context="{'search_default_active_cases': 1, 'dashboard_view': 'my_cases'}"/>
-                        <!-- Recent Cases -->
-                        <action name="legal_case_management.legal_case_action" string="Recent Cases" domain="[]" view_mode="list" context="{'limit': 10, 'dashboard_view': 'recent_cases'}"/>
-                    </column>
-                </board>
-            </form>
+            <kanban class="oe_background_grey o_kanban_dashboard">
+                <field name="active_cases_count"/>
+                <field name="upcoming_hearings_count"/>
+                <field name="next_hearing_date"/>
+                <field name="overdue_cases_count"/>
+                <field name="revenue_this_month"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="container o_kanban_card_manage_pane">
+                            <div class="row">
+                                <!-- Active Cases Card -->
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="card border-primary mb-3">
+                                        <div class="card-header bg-primary text-white">
+                                            <i class="fa fa-briefcase fa-2x float-left"/>
+                                            <div class="float-right text-right">
+                                                <div class="h1"><t t-esc="record.active_cases_count.value"/></div>
+                                                <div>Active Cases</div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <a name="action_view_active_cases" type="object" class="btn btn-outline-primary btn-sm">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upcoming Hearings Card -->
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="card border-warning mb-3">
+                                        <div class="card-header bg-warning text-white">
+                                            <i class="fa fa-calendar fa-2x float-left"/>
+                                            <div class="float-right text-right">
+                                                <div class="h1"><t t-esc="record.upcoming_hearings_count.value"/></div>
+                                                <div>Upcoming Hearings</div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <a name="action_view_upcoming_hearings" type="object" class="btn btn-outline-warning btn-sm">View Schedule</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Next Hearing Date Card -->
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="card border-info mb-3">
+                                        <div class="card-header bg-info text-white">
+                                            <i class="fa fa-clock-o fa-2x float-left"/>
+                                            <div class="float-right text-right">
+                                                <div class="h1">
+                                                    <t t-if="record.next_hearing_date.value">
+                                                        <t t-esc="widget.formatDate(record.next_hearing_date.value)"/>
+                                                    </t>
+                                                    <t t-if="not record.next_hearing_date.value">—</t>
+                                                </div>
+                                                <div>Next Hearing</div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <a name="action_view_upcoming_hearings" type="object" class="btn btn-outline-info btn-sm">View Hearings</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Overdue Cases Card -->
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="card border-danger mb-3">
+                                        <div class="card-header bg-danger text-white">
+                                            <i class="fa fa-exclamation-triangle fa-2x float-left"/>
+                                            <div class="float-right text-right">
+                                                <div class="h1"><t t-esc="record.overdue_cases_count.value"/></div>
+                                                <div>Overdue Cases</div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <a name="action_view_overdue_cases" type="object" class="btn btn-outline-danger btn-sm">Take Action</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Revenue Card -->
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="card border-success mb-3">
+                                        <div class="card-header bg-success text-white">
+                                            <i class="fa fa-dollar fa-2x float-left"/>
+                                            <div class="float-right text-right">
+                                                <div class="h1">
+                                                    <field name="revenue_this_month" widget="monetary"/>
+                                                </div>
+                                                <div>This Month Revenue</div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <a name="action_view_revenue_cases" type="object" class="btn btn-outline-success btn-sm">View Reports</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions Row -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h4>Quick Actions</h4>
+                                    <div class="btn-toolbar" role="toolbar">
+                                        <div class="btn-group mr-2" role="group">
+                                            <a href="/web#action=legal_case_management.legal_case_action&amp;view_type=form" class="btn btn-primary">
+                                                <i class="fa fa-plus"/> New Case
+                                            </a>
+                                        </div>
+                                        <div class="btn-group mr-2" role="group">
+                                            <a href="/web#action=legal_case_management.legal_hearing_action&amp;view_type=form" class="btn btn-warning">
+                                                <i class="fa fa-calendar-plus-o"/> Schedule Hearing
+                                            </a>
+                                        </div>
+                                        <div class="btn-group mr-2" role="group">
+                                            <a href="/web#action=legal_case_management.legal_case_action&amp;view_type=list" class="btn btn-info">
+                                                <i class="fa fa-list"/> All Cases
+                                            </a>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <a href="/web#action=legal_case_management.legal_hearing_action&amp;view_type=calendar" class="btn btn-secondary">
+                                                <i class="fa fa-calendar"/> Calendar View
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
-    <!-- Legal Case Dashboard Action -->
-    <record id="legal_case_dashboard_action" model="ir.actions.act_window">
+    <!-- Dashboard Action -->
+    <record id="legal_dashboard_action" model="ir.actions.act_window">
         <field name="name">Legal Dashboard</field>
-        <field name="res_model">board.board</field>
-        <field name="view_mode">form</field>
-        <field name="usage">menu</field>
-        <field name="view_id" ref="legal_case_dashboard_form"/>
-        <field name="context">{'disable_toolbar': True}</field>
+        <field name="res_model">legal.case</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="legal_dashboard_kanban"/>
+        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Your legal dashboard is empty!
+                Welcome to Legal Case Management!
             </p>
             <p>
-                To add your first report into this dashboard, go to any menu,
-                switch to list or graph view, and click on the "Add to Dashboard" button in the extended search options.
+                Track your cases, schedule hearings, and manage your legal practice efficiently.
             </p>
         </field>
     </record>
+
+    <!-- Add Dashboard to Menu -->
+    <menuitem id="legal_dashboard_menu"
+              name="Dashboard"
+              parent="legal_main_menu"
+              action="legal_dashboard_action"
+              sequence="1"/>
 </odoo>

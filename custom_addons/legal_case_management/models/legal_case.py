@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from datetime import timedelta
+
 
 
 class LegalCase(models.Model):
@@ -97,6 +99,13 @@ class LegalCase(models.Model):
         compute='_compute_next_hearing_date',
         store=True
     )
+    
+    # Dashboard metrics fields - ADD THESE NEW LINES
+    active_cases_count = fields.Integer(compute='_compute_dashboard_metrics')
+    upcoming_hearings_count = fields.Integer(compute='_compute_dashboard_metrics') 
+    overdue_cases_count = fields.Integer(compute='_compute_dashboard_metrics')
+    revenue_this_month = fields.Monetary(compute='_compute_dashboard_metrics', currency_field='currency_id')
+
 
     @api.model
     def create(self, vals):
@@ -220,9 +229,103 @@ class LegalCase(models.Model):
             'view_mode': 'form',
         }
 
+    # ADD THESE NEW METHODS HERE
+    @api.model
+    def _compute_dashboard_metrics(self):
+        """Compute dashboard metrics for all cases"""
+        for record in self:
+            # Active cases count
+            record.active_cases_count = self.search_count([('stage', '!=', 'closed')])
+            
+            # Upcoming hearings count  
+            record.upcoming_hearings_count = self.env['legal.hearing'].search_count([
+                ('date_start', '>=', fields.Date.today()),
+                ('status', '=', 'planned')
+            ])
+            
+            # Overdue cases (active cases older than 90 days)
+            ninety_days_ago = fields.Date.today() - timedelta(days=90)
+            record.overdue_cases_count = self.search_count([
+                ('stage', '=', 'active'),
+                ('open_date', '<=', ninety_days_ago)
+            ])
+            
+            # Revenue this month from closed cases
+            first_day_of_month = fields.Date.today().replace(day=1)
+            closed_cases_this_month = self.search([
+                ('stage', '=', 'closed'),
+                ('close_date', '>=', first_day_of_month)
+            ])
+            record.revenue_this_month = sum(closed_cases_this_month.mapped('fixed_fee_amount'))
+
+    @api.model
+    def get_dashboard_data(self):
+        """Get dashboard data for the legal case management dashboard"""
+        return {
+            'active_cases': self.search_count([('stage', '!=', 'closed')]),
+            'upcoming_hearings': self.env['legal.hearing'].search_count([
+                ('date_start', '>=', fields.Date.today()),
+                ('status', '=', 'planned')
+            ]),
+            'overdue_cases': self.search_count([
+                ('stage', '=', 'active'),
+                ('open_date', '<=', fields.Date.today() - timedelta(days=90))
+            ]),
+            'revenue_this_month': sum(self.search([
+                ('stage', '=', 'closed'),
+                ('close_date', '>=', fields.Date.today().replace(day=1))
+            ]).mapped('fixed_fee_amount'))
+        }
+    def action_view_active_cases(self):
+        """View active cases"""
+        return {
+            'name': _('Active Cases'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'legal.case',
+            'view_mode': 'tree,form,kanban',
+            'domain': [('stage', '!=', 'closed')],
+            'context': {'search_default_stage': 'active'},
+        }
+
+    def action_view_upcoming_hearings(self):
+        """View upcoming hearings"""
+        return {
+            'name': _('Upcoming Hearings'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'legal.hearing',
+            'view_mode': 'tree,form,calendar',
+            'domain': [('date_start', '>=', fields.Date.today()), ('status', '=', 'planned')],
+            'context': {'search_default_upcoming': 1},
+        }
+
+    def action_view_overdue_cases(self):
+        """View overdue cases"""
+        ninety_days_ago = fields.Date.today() - timedelta(days=90)
+        return {
+            'name': _('Overdue Cases (90+ Days)'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'legal.case',
+            'view_mode': 'tree,form',
+            'domain': [('stage', '=', 'active'), ('open_date', '<=', ninety_days_ago)],
+            'context': {'search_default_overdue': 1},
+        }
+
+    def action_view_revenue_cases(self):
+        """View cases contributing to this month's revenue"""
+        first_day_of_month = fields.Date.today().replace(day=1)
+        return {
+            'name': _('Revenue Cases This Month'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'legal.case',
+            'view_mode': 'tree,form',
+            'domain': [('stage', '=', 'closed'), ('close_date', '>=', first_day_of_month)],
+            'context': {'search_default_closed_this_month': 1},
+        }
+
 
 # Extend account.move to add case reference
 class AccountMove(models.Model):
     _inherit = 'account.move'
     
     legal_case_id = fields.Many2one('legal.case', string='Legal Case')
+ 
