@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Dashboard template for Legal Case Management -->
+  <template id="legal_case_dashboard" name="Legal Case Dashboard">
+    <dashboard>
+      <div class="o_dashboard_container container-fluid">
+        <div class="row">
+          <!-- Active Cases Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">
+                <i class="fa fa-briefcase fa-2x mr-2"/>
+                Active Cases
+              </div>
+              <div class="card-body text-center">
+                <span class="h2">
+                  <t t-esc="widget.dashboardData.active_cases_count"/>
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- Upcoming Hearings Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card border-warning">
+              <div class="card-header bg-warning text-white">
+                <i class="fa fa-calendar fa-2x mr-2"/>
+                Upcoming Hearings
+              </div>
+              <div class="card-body text-center">
+                <span class="h2">
+                  <t t-esc="widget.dashboardData.upcoming_hearings_count"/>
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- Next Hearing Date Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card border-info">
+              <div class="card-header bg-info text-white">
+                <i class="fa fa-clock-o fa-2x mr-2"/>
+                Next Hearing
+              </div>
+              <div class="card-body text-center">
+                <t t-if="widget.dashboardData.next_hearing_date">
+                  <span class="h5">
+                    <t t-esc="widget.formatDate(widget.dashboardData.next_hearing_date)"/>
+                  </span>
+                </t>
+                <t t-else="">
+                  <span class="h5">—</span>
+                </t>
+              </div>
+            </div>
+          </div>
+          <!-- Overdue Cases Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card border-danger">
+              <div class="card-header bg-danger text-white">
+                <i class="fa fa-exclamation-triangle fa-2x mr-2"/>
+                Overdue Cases
+              </div>
+              <div class="card-body text-center">
+                <span class="h2">
+                  <t t-esc="widget.dashboardData.overdue_cases_count"/>
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- This Month Revenue Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card border-success">
+              <div class="card-header bg-success text-white">
+                <i class="fa fa-dollar-sign fa-2x mr-2"/>
+                This Month Revenue
+              </div>
+              <div class="card-body text-center">
+                <span class="h2">
+                  <t t-esc="widget.dashboardData.monthly_revenue"/>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+          <div class="col-12">
+            <h5>Quick Actions</h5>
+            <div class="btn-toolbar">
+              <div class="btn-group mr-2">
+                <a class="btn btn-primary" href="#action=legal_case_management.action_new_case">
+                  <i class="fa fa-plus mr-1"/> New Case
+                </a>
+              </div>
+              <div class="btn-group mr-2">
+                <a class="btn btn-warning" href="#action=legal_case_management.action_new_hearing">
+                  <i class="fa fa-calendar-plus mr-1"/> Schedule Hearing
+                </a>
+              </div>
+              <div class="btn-group mr-2">
+                <a class="btn btn-info" href="#action=legal_case_management.action_legal_case_kanban">
+                  <i class="fa fa-list mr-1"/> All Cases
+                </a>
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-secondary" href="#action=legal_case_management.action_calendar_hearings">
+                  <i class="fa fa-calendar mr-1"/> Calendar View
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dashboard>
+  </template>
+</odoo>

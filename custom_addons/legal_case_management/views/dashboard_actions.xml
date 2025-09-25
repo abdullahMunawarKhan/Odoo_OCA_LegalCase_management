@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Client action to open the Legal Case Dashboard -->
+  <record id="action_legal_case_dashboard" model="ir.actions.client">
+    <field name="name">Legal Dashboard</field>
+    <field name="tag">dashboard</field>
+    <field name="target">current</field>
+    <field name="params" eval="{'dashboard_id': ref('legal_case_dashboard')}"/>
+  </record>
+</odoo>

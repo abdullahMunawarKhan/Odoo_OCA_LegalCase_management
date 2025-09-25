@@ -40,6 +40,10 @@ This module follows OCA standards and best practices.
         
         # Data
         'data/sequences.xml',
+        "views/dashboard.xml",
+        "views/dashboard_actions.xml",
+        "views/ir_actions.xml",
+        "views/legal_case_views.xml",
         
         # Views
         'views/res_partner_views.xml',

@@ -4,7 +4,7 @@
     <menuitem id="legal_main_menu" name="Legal" sequence="20" web_icon="legal_case_management,static/description/icon.png"/>
 
     <!-- Dashboard submenu -->
-    <menuitem id="legal_dashboard_menu" name="Dashboard" parent="legal_main_menu" sequence="5" action="legal_case_dashboard_action"/>
+    <menuitem id="legal_dashboard_menu" name="Dashboard" parent="legal_main_menu" sequence="5" action="legal_dashboard_action"/>
 
     <!-- Cases submenu -->
     <menuitem id="legal_cases_menu" name="Cases" parent="legal_main_menu" sequence="10" action="legal_case_action"/>
@@ -20,7 +20,8 @@
     
     <menuitem id="legal_clients_menu" name="Clients" parent="legal_master_menu" sequence="20" action="action_partners_client"/>
     -->
-
+<!-- Dashboard menu item under base Dashboards -->
+    <menuitem id="menu_legal_case_dashboard" name="My Dashboard" parent="base.menu_dashboard" action="action_legal_case_dashboard"/>
     <!-- Reporting submenu -->
     <menuitem id="legal_reporting_menu" name="Reporting" parent="legal_main_menu" sequence="80"/>
 </odoo>
