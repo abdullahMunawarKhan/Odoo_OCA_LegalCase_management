@@ -123,11 +123,11 @@ function showWelcome() {
     document.getElementById('signup-page').classList.add('hidden');
     document.getElementById('dashboard-app').classList.add('hidden');
     appState.currentPage = "welcome";
-    
+
     // Check if user is already logged in
     const savedToken = localStorage.getItem('authToken');
     const savedUser = localStorage.getItem('currentUser');
-    
+
     if (savedToken && savedUser) {
         try {
             appState.authToken = savedToken;
@@ -148,7 +148,7 @@ function showLogin() {
     document.getElementById('signup-page').classList.add('hidden');
     document.getElementById('dashboard-app').classList.add('hidden');
     appState.currentPage = "login";
-    
+
     // Clear any previous error messages
     const errorElement = document.getElementById('login-error');
     if (errorElement) {
@@ -162,7 +162,7 @@ function showSignup() {
     document.getElementById('signup-page').classList.remove('hidden');
     document.getElementById('dashboard-app').classList.add('hidden');
     appState.currentPage = "signup";
-    
+
     // Clear any previous error messages
     const errorElement = document.getElementById('signup-error');
     if (errorElement) {
@@ -177,20 +177,20 @@ function showDashboard() {
     document.getElementById('dashboard-app').classList.remove('hidden');
     appState.currentPage = "dashboard";
     appState.isAuthenticated = true;
-    
+
     // Update user info in the dashboard
     if (appState.currentUser) {
         const userNameElement = document.getElementById('user-name');
         if (userNameElement) {
             userNameElement.textContent = appState.currentUser.name;
         }
-        
+
         const userRoleElement = document.getElementById('user-role');
         if (userRoleElement && appState.currentUser.role) {
             userRoleElement.textContent = appState.currentUser.role;
         }
     }
-    
+
     // Load dashboard data
     loadDashboardData();
 }
@@ -222,14 +222,14 @@ async function authenticateWithOdoo(email, password) {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             showLoginError(data.error.data.message || 'Authentication failed');
             return false;
         }
-        
+
         if (data.result) {
             // Store session info
             appState.isAuthenticated = true;
@@ -237,15 +237,15 @@ async function authenticateWithOdoo(email, password) {
                 id: data.result.uid,
                 name: data.result.name || email,
                 email: email,
-                 role: 'Legal User'
-             };
-             appState.authToken = data.result.session_id;
+                role: 'Legal User'
+            };
+            appState.authToken = data.result.session_id;
             appState.sessionId = data.result.session_id;
-            
+
             // Save to local storage
             localStorage.setItem('authToken', appState.authToken);
             localStorage.setItem('currentUser', JSON.stringify(appState.currentUser));
-            
+
             return true;
         } else {
             showLoginError('Invalid credentials');
@@ -272,14 +272,14 @@ async function registerWithOdoo(userData) {
                 params: userData
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             showSignupError(data.error.data.message || 'Registration failed');
             return false;
         }
-        
+
         if (data.result && data.result.success) {
             // Auto-login after successful registration
             return await authenticateWithOdoo(userData.email, userData.password);
@@ -308,7 +308,7 @@ async function logoutFromOdoo() {
             }),
             credentials: 'include'
         });
-        
+
         appState.isAuthenticated = false;
         appState.currentUser = null;
         appState.authToken = null;
@@ -367,7 +367,7 @@ async function simulateApiCall(endpoint, data) {
                         message: 'Invalid email or password'
                     });
                 }
-            } 
+            }
             // Simulate successful registration
             else if (endpoint === '/web/signup') {
                 resolve({
@@ -407,19 +407,19 @@ async function loadDashboardData() {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to load dashboard data');
         }
-        
+
         if (data.result) {
             // Update dashboard summary cards
             updateDashboardSummary(data.result);
-            
+
             // Load data for the active dashboard page
-            switch(appState.activeDashboardPage) {
+            switch (appState.activeDashboardPage) {
                 case 'cases':
                     loadCasesData();
                     break;
@@ -444,7 +444,7 @@ async function loadDashboardData() {
         const dashboardData = await simulateApiCall('/legal/dashboard/summary', {
             token: appState.authToken
         });
-        
+
         if (dashboardData.success) {
             updateDashboardSummary(dashboardData.data);
         }
@@ -459,7 +459,7 @@ function updateDashboardSummary(data) {
         'clients-count': data.clientsCount || 0,
         'invoices-count': data.invoicesCount || 0
     };
-    
+
     for (const [id, value] of Object.entries(elements)) {
         const element = document.getElementById(id);
         if (element) {
@@ -490,17 +490,17 @@ async function loadCasesData() {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to fetch cases');
         }
-        
+
         if (data.result) {
             // Store cases in appData
             appData.cases = data.result;
-            
+
             // Update the cases list in the UI
             updateCasesList(data.result);
         }
@@ -510,7 +510,7 @@ async function loadCasesData() {
         const response = await simulateApiCall('/legal/cases', {
             token: appState.authToken
         });
-        
+
         if (response.success) {
             appData.cases = response.data;
             updateCasesList(response.data);
@@ -521,14 +521,14 @@ async function loadCasesData() {
 function updateCasesList(cases) {
     const casesContainer = document.getElementById('cases-list');
     if (!casesContainer) return;
-    
+
     casesContainer.innerHTML = '';
-    
+
     if (cases.length === 0) {
         casesContainer.innerHTML = '<div class="empty-state">No cases found</div>';
         return;
     }
-    
+
     // Create table header if it's a table display
     if (casesContainer.tagName === 'TBODY') {
         const headerRow = document.createElement('tr');
@@ -542,14 +542,14 @@ function updateCasesList(cases) {
         `;
         casesContainer.appendChild(headerRow);
     }
-    
+
     cases.forEach(caseItem => {
         // Handle different data structures between Odoo and simulated data
         const clientName = caseItem.client_id ? caseItem.client_id[1] : caseItem.client;
         const lawyerName = caseItem.responsible_lawyer_id ? caseItem.responsible_lawyer_id[1] : caseItem.responsibleLawyer;
         const status = caseItem.state || caseItem.stage;
         const caseNumber = caseItem.case_number || caseItem.caseNumber || '';
-        
+
         if (casesContainer.tagName === 'TBODY') {
             // Table row display
             const row = document.createElement('tr');
@@ -565,7 +565,7 @@ function updateCasesList(cases) {
                 </td>
             `;
             casesContainer.appendChild(row);
-            
+
             // Add event listeners
             const viewButton = row.querySelector('button[data-case-id]');
             if (viewButton) {
@@ -573,7 +573,7 @@ function updateCasesList(cases) {
                     showCaseDetails(caseItem.id);
                 });
             }
-            
+
             const editButton = row.querySelector('button[data-edit-id]');
             if (editButton) {
                 editButton.addEventListener('click', () => {
@@ -600,7 +600,7 @@ function updateCasesList(cases) {
                 </div>
             `;
             casesContainer.appendChild(caseElement);
-            
+
             // Add event listeners
             const viewButton = caseElement.querySelector('button[data-case-id]');
             if (viewButton) {
@@ -608,7 +608,7 @@ function updateCasesList(cases) {
                     showCaseDetails(caseItem.id);
                 });
             }
-            
+
             const editButton = caseElement.querySelector('button[data-edit-id]');
             if (editButton) {
                 editButton.addEventListener('click', () => {
@@ -622,7 +622,7 @@ function updateCasesList(cases) {
 // Helper function to format status strings
 function formatStatus(status) {
     if (!status) return 'Unknown';
-    
+
     // Convert snake_case or kebab-case to Title Case
     return status
         .replace(/_/g, ' ')
@@ -652,17 +652,17 @@ async function loadHearingsData() {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to fetch hearings');
         }
-        
+
         if (data.result) {
             // Store hearings in appData
             appData.hearings = data.result;
-            
+
             // Update the hearings list in the UI
             updateHearingsList(data.result);
         }
@@ -672,7 +672,7 @@ async function loadHearingsData() {
         const response = await simulateApiCall('/legal/hearings', {
             token: appState.authToken
         });
-        
+
         if (response.success) {
             appData.hearings = response.data;
             updateHearingsList(response.data);
@@ -683,14 +683,14 @@ async function loadHearingsData() {
 function updateHearingsList(hearings) {
     const hearingsContainer = document.getElementById('hearings-list');
     if (!hearingsContainer) return;
-    
+
     hearingsContainer.innerHTML = '';
-    
+
     if (hearings.length === 0) {
         hearingsContainer.innerHTML = '<div class="empty-state">No hearings found</div>';
         return;
     }
-    
+
     hearings.forEach(hearing => {
         const hearingElement = document.createElement('div');
         hearingElement.className = 'hearing-item';
@@ -709,7 +709,7 @@ function updateHearingsList(hearings) {
             </div>
         `;
         hearingsContainer.appendChild(hearingElement);
-        
+
         // Add event listener for the view details button
         const viewButton = hearingElement.querySelector('button[data-hearing-id]');
         if (viewButton) {
@@ -742,17 +742,17 @@ async function loadClientsData() {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to fetch clients');
         }
-        
+
         if (data.result) {
             // Store clients in appData
             appData.clients = data.result;
-            
+
             // Update the clients list in the UI
             updateClientsList(data.result);
         }
@@ -762,7 +762,7 @@ async function loadClientsData() {
         const response = await simulateApiCall('/legal/clients', {
             token: appState.authToken
         });
-        
+
         if (response.success) {
             appData.clients = response.data;
             updateClientsList(response.data);
@@ -773,14 +773,14 @@ async function loadClientsData() {
 function updateClientsList(clients) {
     const clientsContainer = document.getElementById('clients-list');
     if (!clientsContainer) return;
-    
+
     clientsContainer.innerHTML = '';
-    
+
     if (clients.length === 0) {
         clientsContainer.innerHTML = '<div class="empty-state">No clients found</div>';
         return;
     }
-    
+
     clients.forEach(client => {
         const clientElement = document.createElement('div');
         clientElement.className = 'client-item';
@@ -798,7 +798,7 @@ function updateClientsList(clients) {
             </div>
         `;
         clientsContainer.appendChild(clientElement);
-        
+
         // Add event listener for the view details button
         const viewButton = clientElement.querySelector('button[data-client-id]');
         if (viewButton) {
@@ -831,17 +831,17 @@ async function loadInvoicesData() {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to fetch invoices');
         }
-        
+
         if (data.result) {
             // Store invoices in appData
             appData.invoices = data.result;
-            
+
             // Update the invoices list in the UI
             updateInvoicesList(data.result);
         }
@@ -851,7 +851,7 @@ async function loadInvoicesData() {
         const response = await simulateApiCall('/legal/invoices', {
             token: appState.authToken
         });
-        
+
         if (response.success) {
             appData.invoices = response.data;
             updateInvoicesList(response.data);
@@ -862,14 +862,14 @@ async function loadInvoicesData() {
 function updateInvoicesList(invoices) {
     const invoicesContainer = document.getElementById('invoices-list');
     if (!invoicesContainer) return;
-    
+
     invoicesContainer.innerHTML = '';
-    
+
     if (invoices.length === 0) {
         invoicesContainer.innerHTML = '<div class="empty-state">No invoices found</div>';
         return;
     }
-    
+
     invoices.forEach(invoice => {
         // Handle different data structures between Odoo and simulated data
         const clientName = invoice.client_id ? invoice.client_id[1] : invoice.client;
@@ -881,7 +881,7 @@ function updateInvoicesList(invoices) {
         const fixedFeeAmount = invoice.fixed_fee_amount || 0;
         const hourlyRate = invoice.hourly_rate || 0;
         const hoursSpent = invoice.hours_spent || 0;
-        
+
         const invoiceElement = document.createElement('div');
         invoiceElement.className = 'invoice-item';
         invoiceElement.innerHTML = `
@@ -894,22 +894,22 @@ function updateInvoicesList(invoices) {
                 <p><strong>Case:</strong> ${caseName}</p>
                 <p><strong>Type:</strong> ${invoiceType === 'fixed_fee' ? 'Fixed Fee' : 'Hourly Rate'}</p>
                 <p><strong>Amount:</strong> $${parseFloat(amount).toFixed(2)}</p>
-                ${invoiceType === 'fixed_fee' ? 
-                    `<p><strong>Fixed Fee:</strong> $${parseFloat(fixedFeeAmount).toFixed(2)}</p>` : 
-                    `<p><strong>Hours:</strong> ${hoursSpent} @ $${parseFloat(hourlyRate).toFixed(2)}/hr</p>`
-                }
+                ${invoiceType === 'fixed_fee' ?
+                `<p><strong>Fixed Fee:</strong> $${parseFloat(fixedFeeAmount).toFixed(2)}</p>` :
+                `<p><strong>Hours:</strong> ${hoursSpent} @ $${parseFloat(hourlyRate).toFixed(2)}/hr</p>`
+            }
                 <p><strong>Date:</strong> ${formatDate(invoice.date)}</p>
                 ${invoice.due_date ? `<p><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</p>` : ''}
             </div>
             <div class="invoice-actions">
                 <button class="btn btn-sm btn-primary" data-invoice-id="${invoice.id}">View Invoice</button>
-                ${status.toLowerCase() !== 'paid' ? 
-                    `<button class="btn btn-sm btn-success" data-pay-id="${invoice.id}">Mark as Paid</button>` : ''
-                }
+                ${status.toLowerCase() !== 'paid' ?
+                `<button class="btn btn-sm btn-success" data-pay-id="${invoice.id}">Mark as Paid</button>` : ''
+            }
             </div>
         `;
         invoicesContainer.appendChild(invoiceElement);
-        
+
         // Add event listener for the view invoice button
         const viewButton = invoiceElement.querySelector('button[data-invoice-id]');
         if (viewButton) {
@@ -917,7 +917,7 @@ function updateInvoicesList(invoices) {
                 showInvoiceDetails(invoice.id);
             });
         }
-        
+
         // Add event listener for the mark as paid button
         const payButton = invoiceElement.querySelector('button[data-pay-id]');
         if (payButton) {
@@ -933,7 +933,7 @@ async function loadRecentActivity() {
         const response = await simulateApiCall('/legal/activity', {
             token: appState.authToken
         });
-        
+
         if (response.success) {
             updateActivityFeed(response.data);
         }
@@ -945,14 +945,14 @@ async function loadRecentActivity() {
 function updateActivityFeed(activities) {
     const activityContainer = document.getElementById('activity-feed');
     if (!activityContainer) return;
-    
+
     activityContainer.innerHTML = '';
-    
+
     if (activities.length === 0) {
         activityContainer.innerHTML = '<div class="empty-state">No recent activity</div>';
         return;
     }
-    
+
     activities.forEach(activity => {
         const activityElement = document.createElement('div');
         activityElement.className = 'activity-item';
@@ -979,7 +979,7 @@ function getActivityIcon(type) {
         'document': 'fa-file-alt',
         'message': 'fa-comment'
     };
-    
+
     return icons[type.toLowerCase()] || 'fa-bell';
 }
 
@@ -998,32 +998,32 @@ function formatTimeAgo(timestamp) {
     const now = new Date();
     const date = new Date(timestamp);
     const seconds = Math.floor((now - date) / 1000);
-    
+
     let interval = Math.floor(seconds / 31536000);
     if (interval >= 1) {
         return interval + ' year' + (interval === 1 ? '' : 's') + ' ago';
     }
-    
+
     interval = Math.floor(seconds / 2592000);
     if (interval >= 1) {
         return interval + ' month' + (interval === 1 ? '' : 's') + ' ago';
     }
-    
+
     interval = Math.floor(seconds / 86400);
     if (interval >= 1) {
         return interval + ' day' + (interval === 1 ? '' : 's') + ' ago';
     }
-    
+
     interval = Math.floor(seconds / 3600);
     if (interval >= 1) {
         return interval + ' hour' + (interval === 1 ? '' : 's') + ' ago';
     }
-    
+
     interval = Math.floor(seconds / 60);
     if (interval >= 1) {
         return interval + ' minute' + (interval === 1 ? '' : 's') + ' ago';
     }
-    
+
     return Math.floor(seconds) + ' second' + (seconds === 1 ? '' : 's') + ' ago';
 }
 
@@ -1031,7 +1031,7 @@ function formatTimeAgo(timestamp) {
 function showCaseDetails(caseId) {
     const caseData = appData.cases.find(c => c.id === caseId);
     if (!caseData) return;
-    
+
     // Create modal element
     let modal = document.getElementById('case-details-modal');
     if (!modal) {
@@ -1040,13 +1040,13 @@ function showCaseDetails(caseId) {
         modal.className = 'modal';
         document.body.appendChild(modal);
     }
-    
+
     // Handle different data structures between Odoo and simulated data
     const clientName = caseData.client_id ? caseData.client_id[1] : caseData.client;
     const lawyerName = caseData.responsible_lawyer_id ? caseData.responsible_lawyer_id[1] : caseData.responsibleLawyer;
     const status = caseData.state || caseData.stage;
     const caseNumber = caseData.case_number || caseData.caseNumber || '';
-    
+
     // Populate modal with case details
     modal.innerHTML = `
         <div class="modal-content">
@@ -1099,15 +1099,15 @@ function showCaseDetails(caseId) {
             </div>
         </div>
     `;
-    
+
     // Show the modal
     modal.style.display = 'block';
-    
+
     // Add event listeners
     modal.querySelector('.close').addEventListener('click', () => {
         modal.style.display = 'none';
     });
-    
+
     const editCaseBtn = modal.querySelector('#edit-case-btn');
     if (editCaseBtn) {
         editCaseBtn.addEventListener('click', () => {
@@ -1115,7 +1115,7 @@ function showCaseDetails(caseId) {
             showCaseForm(caseId);
         });
     }
-    
+
     const createInvoiceBtn = modal.querySelector('#create-case-invoice-btn');
     if (createInvoiceBtn) {
         createInvoiceBtn.addEventListener('click', () => {
@@ -1123,14 +1123,14 @@ function showCaseDetails(caseId) {
             showInvoiceForm(caseId);
         });
     }
-    
+
     const closeBtn = modal.querySelector('#close-details-btn');
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
     }
-    
+
     // Close modal when clicking outside of it
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
@@ -1142,7 +1142,7 @@ function showCaseDetails(caseId) {
 function showHearingDetails(hearingId) {
     const hearingData = appData.hearings.find(h => h.id === hearingId);
     if (!hearingData) return;
-    
+
     // Implementation for showing hearing details modal or page
     alert(`Hearing details for: ${hearingData.name}\nThis would show a detailed view in a real implementation.`);
 }
@@ -1150,7 +1150,7 @@ function showHearingDetails(hearingId) {
 function showClientDetails(clientId) {
     const clientData = appData.clients.find(c => c.id === clientId);
     if (!clientData) return;
-    
+
     // Implementation for showing client details modal or page
     alert(`Client details for: ${clientData.name}\nThis would show a detailed view in a real implementation.`);
 }
@@ -1158,7 +1158,7 @@ function showClientDetails(clientId) {
 function showInvoiceDetails(invoiceId) {
     const invoice = appData.invoices.find(i => i.id === invoiceId);
     if (!invoice) return;
-    
+
     // Get or create modal element
     let modal = document.getElementById('invoice-detail-modal');
     if (!modal) {
@@ -1167,7 +1167,7 @@ function showInvoiceDetails(invoiceId) {
         modal.className = 'modal';
         document.body.appendChild(modal);
     }
-    
+
     // Handle different data structures between Odoo and simulated data
     const clientName = invoice.client_id ? invoice.client_id[1] : invoice.client;
     const caseName = invoice.case_id ? invoice.case_id[1] : invoice.caseName;
@@ -1178,7 +1178,7 @@ function showInvoiceDetails(invoiceId) {
     const fixedFeeAmount = invoice.fixed_fee_amount || 0;
     const hourlyRate = invoice.hourly_rate || 0;
     const hoursSpent = invoice.hours_spent || 0;
-    
+
     // Populate modal with invoice details
     modal.innerHTML = `
         <div class="modal-content">
@@ -1201,55 +1201,55 @@ function showInvoiceDetails(invoiceId) {
                 <div class="invoice-detail-section">
                     <h3>Billing Information</h3>
                     <p><strong>Invoice Type:</strong> ${invoiceType === 'fixed_fee' ? 'Fixed Fee' : 'Hourly Rate'}</p>
-                    ${invoiceType === 'fixed_fee' ? 
-                        `<p><strong>Fixed Fee Amount:</strong> $${parseFloat(fixedFeeAmount).toFixed(2)}</p>` : 
-                        `<p><strong>Hours Spent:</strong> ${hoursSpent}</p>
+                    ${invoiceType === 'fixed_fee' ?
+            `<p><strong>Fixed Fee Amount:</strong> $${parseFloat(fixedFeeAmount).toFixed(2)}</p>` :
+            `<p><strong>Hours Spent:</strong> ${hoursSpent}</p>
                          <p><strong>Hourly Rate:</strong> $${parseFloat(hourlyRate).toFixed(2)}</p>
                          <p><strong>Total Hours Charge:</strong> $${(parseFloat(hourlyRate) * parseFloat(hoursSpent)).toFixed(2)}</p>`
-                    }
+        }
                     <p><strong>Total Amount:</strong> $${parseFloat(amount).toFixed(2)}</p>
                     ${invoice.due_date ? `<p><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</p>` : ''}
                 </div>
                 
                 <div class="invoice-detail-section">
                     <h3>Payment Information</h3>
-                    ${status.toLowerCase() === 'paid' ? 
-                        `<p><strong>Payment Date:</strong> ${invoice.payment_date ? formatDate(invoice.payment_date) : 'N/A'}</p>
-                         <p><strong>Payment Method:</strong> ${invoice.payment_method || 'N/A'}</p>` : 
-                        `<p>This invoice has not been paid yet.</p>`
-                    }
+                    ${status.toLowerCase() === 'paid' ?
+            `<p><strong>Payment Date:</strong> ${invoice.payment_date ? formatDate(invoice.payment_date) : 'N/A'}</p>
+                         <p><strong>Payment Method:</strong> ${invoice.payment_method || 'N/A'}</p>` :
+            `<p>This invoice has not been paid yet.</p>`
+        }
                 </div>
                 
                 <div class="invoice-detail-actions">
                     <button class="btn btn-primary" id="print-invoice">Print Invoice</button>
-                    ${status.toLowerCase() !== 'paid' ? 
-                        `<button class="btn btn-success" id="pay-invoice">Mark as Paid</button>` : ''
-                    }
+                    ${status.toLowerCase() !== 'paid' ?
+            `<button class="btn btn-success" id="pay-invoice">Mark as Paid</button>` : ''
+        }
                     <button class="btn btn-secondary" id="close-modal">Close</button>
                 </div>
             </div>
         </div>
     `;
-    
+
     // Show the modal
     modal.style.display = 'block';
-    
+
     // Add event listeners
     modal.querySelector('.close').addEventListener('click', () => {
         modal.style.display = 'none';
     });
-    
+
     modal.querySelector('#close-modal').addEventListener('click', () => {
         modal.style.display = 'none';
     });
-    
+
     const printButton = modal.querySelector('#print-invoice');
     if (printButton) {
         printButton.addEventListener('click', () => {
             printInvoice(invoiceId);
         });
     }
-    
+
     const payButton = modal.querySelector('#pay-invoice');
     if (payButton) {
         payButton.addEventListener('click', () => {
@@ -1257,7 +1257,7 @@ function showInvoiceDetails(invoiceId) {
             modal.style.display = 'none';
         });
     }
-    
+
     // Close modal when clicking outside of it
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
@@ -1289,13 +1289,13 @@ async function markInvoiceAsPaid(invoiceId) {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to mark invoice as paid');
         }
-        
+
         if (data.result) {
             // Update the invoice in the local data
             const invoice = appData.invoices.find(i => i.id === invoiceId);
@@ -1305,10 +1305,10 @@ async function markInvoiceAsPaid(invoiceId) {
                 invoice.payment_date = new Date().toISOString();
                 invoice.payment_method = 'bank_transfer';
             }
-            
+
             // Refresh the invoices list
             loadInvoicesData();
-            
+
             // Show success message
             alert('Invoice has been marked as paid successfully!');
         }
@@ -1322,10 +1322,10 @@ async function markInvoiceAsPaid(invoiceId) {
             invoice.payment_date = new Date().toISOString();
             invoice.payment_method = 'bank_transfer';
         }
-        
+
         // Refresh the invoices list
         updateInvoicesList(appData.invoices);
-        
+
         // Show success message
         alert('Invoice has been marked as paid successfully! (Demo mode)');
     }
@@ -1334,10 +1334,10 @@ async function markInvoiceAsPaid(invoiceId) {
 function printInvoice(invoiceId) {
     const invoice = appData.invoices.find(i => i.id === invoiceId);
     if (!invoice) return;
-    
+
     // Create a printable version of the invoice
     const printWindow = window.open('', '_blank');
-    
+
     // Handle different data structures between Odoo and simulated data
     const clientName = invoice.client_id ? invoice.client_id[1] : invoice.client;
     const caseName = invoice.case_id ? invoice.case_id[1] : invoice.caseName;
@@ -1348,7 +1348,7 @@ function printInvoice(invoiceId) {
     const fixedFeeAmount = invoice.fixed_fee_amount || 0;
     const hourlyRate = invoice.hourly_rate || 0;
     const hoursSpent = invoice.hours_spent || 0;
-    
+
     printWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -1400,18 +1400,18 @@ function printInvoice(invoiceId) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${invoiceType === 'fixed_fee' ? 
-                        `<tr>
+                    ${invoiceType === 'fixed_fee' ?
+            `<tr>
                             <td>Legal Services - Fixed Fee</td>
                             <td>Fixed fee for legal services related to case ${caseName}</td>
                             <td>$${parseFloat(fixedFeeAmount).toFixed(2)}</td>
-                        </tr>` : 
-                        `<tr>
+                        </tr>` :
+            `<tr>
                             <td>Legal Services - Hourly Rate</td>
                             <td>${hoursSpent} hours @ $${parseFloat(hourlyRate).toFixed(2)}/hour</td>
                             <td>$${(parseFloat(hourlyRate) * parseFloat(hoursSpent)).toFixed(2)}</td>
                         </tr>`
-                    }
+        }
                 </tbody>
             </table>
             
@@ -1426,7 +1426,7 @@ function printInvoice(invoiceId) {
         </body>
         </html>
     `);
-    
+
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => {
@@ -1444,13 +1444,13 @@ function showInvoiceForm(caseId = null) {
         modal.className = 'modal';
         document.body.appendChild(modal);
     }
-    
+
     // Get case data if caseId is provided
     let caseData = null;
     if (caseId) {
         caseData = appData.cases.find(c => c.id === caseId);
     }
-    
+
     // Populate modal with invoice form
     modal.innerHTML = `
         <div class="modal-content">
@@ -1518,32 +1518,32 @@ function showInvoiceForm(caseId = null) {
             </div>
         </div>
     `;
-    
+
     // Show the modal
     modal.style.display = 'block';
-    
+
     // Set default dates
     const today = new Date();
     const dueDate = new Date();
     dueDate.setDate(today.getDate() + 30); // Due in 30 days
-    
+
     document.getElementById('invoice-date').value = today.toISOString().split('T')[0];
     document.getElementById('invoice-due-date').value = dueDate.toISOString().split('T')[0];
-    
+
     // Add event listeners
     modal.querySelector('.close').addEventListener('click', () => {
         modal.style.display = 'none';
     });
-    
+
     document.getElementById('cancel-invoice').addEventListener('click', () => {
         modal.style.display = 'none';
     });
-    
+
     // Toggle between hourly and fixed fee fields
     document.getElementById('invoice-type').addEventListener('change', (e) => {
         const hourlyFields = document.getElementById('hourly-rate-fields');
         const fixedFeeFields = document.getElementById('fixed-fee-fields');
-        
+
         if (e.target.value === 'fixed_fee') {
             hourlyFields.style.display = 'none';
             fixedFeeFields.style.display = 'block';
@@ -1552,22 +1552,22 @@ function showInvoiceForm(caseId = null) {
             fixedFeeFields.style.display = 'none';
         }
     });
-    
+
     // Handle form submission
     document.getElementById('invoice-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const caseId = document.getElementById('invoice-case').value;
         const invoiceType = document.getElementById('invoice-type').value;
         const invoiceDate = document.getElementById('invoice-date').value;
         const dueDate = document.getElementById('invoice-due-date').value;
         const notes = document.getElementById('invoice-notes').value;
-        
+
         let amount = 0;
         let hourlyRate = 0;
         let hoursSpent = 0;
         let fixedFeeAmount = 0;
-        
+
         if (invoiceType === 'hourly') {
             hourlyRate = parseFloat(document.getElementById('invoice-hourly-rate').value);
             hoursSpent = parseFloat(document.getElementById('invoice-hours').value);
@@ -1576,7 +1576,7 @@ function showInvoiceForm(caseId = null) {
             fixedFeeAmount = parseFloat(document.getElementById('invoice-fixed-fee').value);
             amount = fixedFeeAmount;
         }
-        
+
         // Create the invoice
         await createInvoice({
             caseId,
@@ -1589,11 +1589,11 @@ function showInvoiceForm(caseId = null) {
             fixedFeeAmount,
             notes
         });
-        
+
         // Close the modal
         modal.style.display = 'none';
     });
-    
+
     // Close modal when clicking outside of it
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
@@ -1633,17 +1633,17 @@ async function createInvoice(invoiceData) {
             }),
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error.data.message || 'Failed to create invoice');
         }
-        
+
         if (data.result) {
             // Refresh the invoices list
             loadInvoicesData();
-            
+
             // Show success message
             alert('Invoice has been created successfully!');
         }
@@ -1651,10 +1651,10 @@ async function createInvoice(invoiceData) {
         console.error('Error creating invoice:', error);
         // Fallback for demo
         const caseData = appData.cases.find(c => c.id === parseInt(invoiceData.caseId));
-        
+
         // Generate a new invoice ID
         const newId = appData.invoices ? Math.max(...appData.invoices.map(i => i.id)) + 1 : 1;
-        
+
         // Create a new invoice object
         const newInvoice = {
             id: newId,
@@ -1672,16 +1672,16 @@ async function createInvoice(invoiceData) {
             hours_spent: invoiceData.hoursSpent,
             notes: invoiceData.notes
         };
-        
+
         // Add to local data
         if (!appData.invoices) {
             appData.invoices = [];
         }
         appData.invoices.push(newInvoice);
-        
+
         // Refresh the invoices list
         updateInvoicesList(appData.invoices);
-        
+
         // Show success message
         alert('Invoice has been created successfully! (Demo mode)');
     }
@@ -1692,45 +1692,45 @@ function showCaseForm(caseId = null) {
     const modal = document.getElementById('case-form-modal');
     const modalTitle = modal.querySelector('.modal-title');
     const form = document.getElementById('case-form');
-    
+
     // Clear previous form data
     form.reset();
-    
+
     // Set the form title based on whether it's an edit or new case
     modalTitle.textContent = caseId ? 'Edit Case' : 'New Case';
-    
+
     // If editing an existing case, populate the form with case data
     if (caseId) {
         const caseData = appData.cases.find(c => c.id === caseId);
         if (caseData) {
             document.getElementById('case-name').value = caseData.name || '';
             document.getElementById('case-number').value = caseData.case_number || '';
-            
+
             // Set client dropdown
             if (caseData.client_id) {
                 document.getElementById('case-client').value = caseData.client_id[0];
             }
-            
+
             // Set lawyer dropdown
             if (caseData.responsible_lawyer_id) {
                 document.getElementById('case-lawyer').value = caseData.responsible_lawyer_id[0];
             }
-            
+
             // Set case type
             if (caseData.case_type) {
                 document.getElementById('case-type').value = caseData.case_type;
             }
-            
+
             // Set status
             if (caseData.state) {
                 document.getElementById('case-status').value = caseData.state;
             }
-            
+
             // Set description
             if (caseData.description) {
                 document.getElementById('case-description').value = caseData.description;
             }
-            
+
             // Set the case ID as a data attribute on the form
             form.setAttribute('data-case-id', caseId);
         }
@@ -1738,26 +1738,26 @@ function showCaseForm(caseId = null) {
         // Remove any case ID data attribute
         form.removeAttribute('data-case-id');
     }
-    
+
     // Populate client dropdown if not already populated
     const clientDropdown = document.getElementById('case-client');
     if (clientDropdown.options.length <= 1) {
         populateClientDropdown(clientDropdown);
     }
-    
+
     // Populate lawyer dropdown if not already populated
     const lawyerDropdown = document.getElementById('case-lawyer');
     if (lawyerDropdown.options.length <= 1) {
         populateLawyerDropdown(lawyerDropdown);
     }
-    
+
     // Show the modal
     modal.classList.add('active');
-    
+
     // Add event listener for form submission
-    form.onsubmit = async function(e) {
+    form.onsubmit = async function (e) {
         e.preventDefault();
-        
+
         // Get form data
         const formData = {
             name: document.getElementById('case-name').value,
@@ -1768,7 +1768,7 @@ function showCaseForm(caseId = null) {
             state: document.getElementById('case-status').value,
             description: document.getElementById('case-description').value
         };
-        
+
         try {
             let result;
             if (caseId) {
@@ -1778,14 +1778,14 @@ function showCaseForm(caseId = null) {
                 // Create new case
                 result = await createCase(formData);
             }
-            
+
             if (result.success) {
                 // Close the modal
                 modal.classList.remove('active');
-                
+
                 // Reload cases data
                 await loadCasesData();
-                
+
                 // Show success message
                 showNotification('Case saved successfully', 'success');
             } else {
@@ -1796,11 +1796,11 @@ function showCaseForm(caseId = null) {
             showNotification('An error occurred while saving the case', 'error');
         }
     };
-    
+
     // Add event listener for close button
     const closeButtons = modal.querySelectorAll('.close-modal');
     closeButtons.forEach(button => {
-        button.onclick = function() {
+        button.onclick = function () {
             modal.classList.remove('active');
         };
     });
@@ -1811,76 +1811,76 @@ function showHearingForm(hearingId = null) {
     const modal = document.getElementById('hearing-form-modal');
     const modalTitle = modal.querySelector('.modal-title');
     const form = document.getElementById('hearing-form');
-    
+
     // Clear previous form data
     form.reset();
-    
+
     // Set the form title based on whether it's an edit or new hearing
     modalTitle.textContent = hearingId ? 'Edit Hearing' : 'New Hearing';
-    
+
     // If editing an existing hearing, populate the form with hearing data
     if (hearingId) {
         const hearingData = appData.hearings.find(h => h.id === hearingId);
         if (hearingData) {
             document.getElementById('hearing-name').value = hearingData.name || '';
-            
+
             // Set case dropdown
             if (hearingData.case_id) {
                 document.getElementById('hearing-case').value = hearingData.case_id[0];
             }
-            
+
             // Set date and time
             if (hearingData.dateStart) {
                 const date = new Date(hearingData.dateStart);
                 document.getElementById('hearing-date').value = date.toISOString().split('T')[0];
                 document.getElementById('hearing-time').value = date.toTimeString().slice(0, 5);
             }
-            
+
             // Set location
             if (hearingData.location) {
                 document.getElementById('hearing-location').value = hearingData.location;
             }
-            
+
             // Set status
             if (hearingData.status) {
                 document.getElementById('hearing-status').value = hearingData.status;
             }
-            
+
             // Set notes
             if (hearingData.notes) {
                 document.getElementById('hearing-notes').value = hearingData.notes;
             }
-            
+
             // Set the hearing ID as a data attribute on the form
             form.setAttribute('data-hearing-id', hearingId);
         }
     } else {
         // Remove any hearing ID data attribute
         form.removeAttribute('data-hearing-id');
-        
+
         // Set default date to today
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('hearing-date').value = today;
     }
-    
+
     // Populate case dropdown if not already populated
     const caseDropdown = document.getElementById('hearing-case');
     if (caseDropdown.options.length <= 1) {
         populateCaseDropdown(caseDropdown);
     }
-    
+
     // Show the modal
     modal.classList.add('active');
-    
+
     // Add event listener for form submission
-    form.onsubmit = async function(e) {
+    form.onsubmit = async function (e) {
         e.preventDefault();
-        
+
         // Get form data
         const date = document.getElementById('hearing-date').value;
         const time = document.getElementById('hearing-time').value;
         const dateTime = new Date(`${date}T${time}:00`);
-        
+
         const formData = {
             name: document.getElementById('hearing-name').value,
             case_id: parseInt(document.getElementById('hearing-case').value),
@@ -1890,7 +1890,7 @@ function showHearingForm(hearingId = null) {
             status: document.getElementById('hearing-status').value,
             notes: document.getElementById('hearing-notes').value
         };
-        
+
         try {
             let result;
             if (hearingId) {
@@ -1900,14 +1900,14 @@ function showHearingForm(hearingId = null) {
                 // Create new hearing
                 result = await createHearing(formData);
             }
-            
+
             if (result.success) {
                 // Close the modal
                 modal.classList.remove('active');
-                
+
                 // Reload hearings data
                 await loadHearingsData();
-                
+
                 // Show success message
                 showNotification('Hearing saved successfully', 'success');
             } else {
@@ -1918,11 +1918,11 @@ function showHearingForm(hearingId = null) {
             showNotification('An error occurred while saving the hearing', 'error');
         }
     };
-    
+
     // Add event listener for close button
     const closeButtons = modal.querySelectorAll('.close-modal');
     closeButtons.forEach(button => {
-        button.onclick = function() {
+        button.onclick = function () {
             modal.classList.remove('active');
         };
     });
@@ -1933,13 +1933,13 @@ function showClientForm(clientId = null) {
     const modal = document.getElementById('client-form-modal');
     const modalTitle = modal.querySelector('.modal-title');
     const form = document.getElementById('client-form');
-    
+
     // Clear previous form data
     form.reset();
-    
+
     // Set the form title based on whether it's an edit or new client
     modalTitle.textContent = clientId ? 'Edit Client' : 'New Client';
-    
+
     // If editing an existing client, populate the form with client data
     if (clientId) {
         const clientData = appData.clients.find(c => c.id === clientId);
@@ -1948,7 +1948,7 @@ function showClientForm(clientId = null) {
             document.getElementById('client-email').value = clientData.email || '';
             document.getElementById('client-phone').value = clientData.phone || '';
             document.getElementById('client-address').value = clientData.address || '';
-            
+
             // Set the client ID as a data attribute on the form
             form.setAttribute('data-client-id', clientId);
         }
@@ -1956,14 +1956,14 @@ function showClientForm(clientId = null) {
         // Remove any client ID data attribute
         form.removeAttribute('data-client-id');
     }
-    
+
     // Show the modal
     modal.classList.add('active');
-    
+
     // Add event listener for form submission
-    form.onsubmit = async function(e) {
+    form.onsubmit = async function (e) {
         e.preventDefault();
-        
+
         // Get form data
         const formData = {
             name: document.getElementById('client-name').value,
@@ -1972,7 +1972,7 @@ function showClientForm(clientId = null) {
             address: document.getElementById('client-address').value,
             isClient: true
         };
-        
+
         try {
             let result;
             if (clientId) {
@@ -1982,14 +1982,14 @@ function showClientForm(clientId = null) {
                 // Create new client
                 result = await createClient(formData);
             }
-            
+
             if (result.success) {
                 // Close the modal
                 modal.classList.remove('active');
-                
+
                 // Reload clients data
                 await loadClientsData();
-                
+
                 // Show success message
                 showNotification('Client saved successfully', 'success');
             } else {
@@ -2000,18 +2000,18 @@ function showClientForm(clientId = null) {
             showNotification('An error occurred while saving the client', 'error');
         }
     };
-    
+
     // Add event listener for close button
     const closeButtons = modal.querySelectorAll('.close-modal');
     closeButtons.forEach(button => {
-        button.onclick = function() {
+        button.onclick = function () {
             modal.classList.remove('active');
         };
     });
 }
 
 // This older version of showInvoiceForm has been replaced by the updated version at line 1438
-        
+
 /* Removed orphaned code that was causing syntax errors */
 
 /* Original code removed - this was part of the duplicate showInvoiceForm function that has been replaced */
@@ -2022,7 +2022,7 @@ function populateClientDropdown(dropdown) {
     while (dropdown.options.length > 1) {
         dropdown.remove(1);
     }
-    
+
     // Add clients to dropdown
     appData.clients.forEach(client => {
         const option = document.createElement('option');
@@ -2037,7 +2037,7 @@ function populateLawyerDropdown(dropdown) {
     while (dropdown.options.length > 1) {
         dropdown.remove(1);
     }
-    
+
     // Add lawyers to dropdown
     appData.lawyers.forEach(lawyer => {
         const option = document.createElement('option');
@@ -2052,7 +2052,7 @@ function populateCaseDropdown(dropdown) {
     while (dropdown.options.length > 1) {
         dropdown.remove(1);
     }
-    
+
     // Add cases to dropdown
     appData.cases.forEach(caseItem => {
         const option = document.createElement('option');
@@ -2067,7 +2067,7 @@ function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification--${type}`;
     notification.textContent = message;
-    
+
     // Add notification to the DOM
     const notificationsContainer = document.getElementById('notifications-container');
     if (!notificationsContainer) {
@@ -2079,7 +2079,7 @@ function showNotification(message, type = 'info') {
     } else {
         notificationsContainer.appendChild(notification);
     }
-    
+
     // Remove notification after 5 seconds
     setTimeout(() => {
         notification.classList.add('notification--fade-out');
@@ -2090,11 +2090,11 @@ function showNotification(message, type = 'info') {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check for existing session
     const savedToken = localStorage.getItem('authToken');
     const savedUser = localStorage.getItem('currentUser');
-    
+
     if (savedToken && savedUser) {
         try {
             appState.authToken = savedToken;
@@ -2107,15 +2107,15 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.removeItem('currentUser');
         }
     }
-    
+
     // Login Form Submission
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-        loginForm.addEventListener('submit', async function(e) {
+        loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
+
             // Simple validation
             if (email && password) {
                 const loginBtn = loginForm.querySelector('button[type="submit"]');
@@ -2123,14 +2123,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     loginBtn.disabled = true;
                     loginBtn.textContent = 'Logging in...';
                 }
-                
+
                 const success = await authenticateWithOdoo(email, password);
-                
+
                 if (success) {
                     showDashboard();
                     loadDashboardData();
                 }
-                
+
                 if (loginBtn) {
                     loginBtn.disabled = false;
                     loginBtn.textContent = 'Sign In';
@@ -2138,44 +2138,44 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Signup Form Submission
     const signupForm = document.getElementById('signup-form');
     if (signupForm) {
-        signupForm.addEventListener('submit', async function(e) {
+        signupForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             const firstName = document.getElementById('signup-firstname').value;
             const lastName = document.getElementById('signup-lastname').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-confirm-password').value;
-            
+
             // Simple validation
             if (firstName && lastName && email && password && confirmPassword) {
                 if (password !== confirmPassword) {
                     showSignupError('Passwords do not match');
                     return;
                 }
-                
+
                 const signupBtn = signupForm.querySelector('button[type="submit"]');
                 if (signupBtn) {
                     signupBtn.disabled = true;
                     signupBtn.textContent = 'Creating account...';
                 }
-                
+
                 const userData = {
                     name: `${firstName} ${lastName}`,
                     email: email,
                     password: password
                 };
-                
+
                 const success = await registerWithOdoo(userData);
-                
+
                 if (success) {
                     showDashboard();
                     loadDashboardData();
                 }
-                
+
                 if (signupBtn) {
                     signupBtn.disabled = false;
                     signupBtn.textContent = 'Sign Up';
@@ -2185,27 +2185,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Dashboard Navigation
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const targetPage = this.getAttribute('data-page');
-            
+
             // Update active button
             navButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Show target page
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
             document.getElementById(`${targetPage}-page`).classList.add('active');
-            
+
             appState.activeDashboardPage = targetPage;
-            
+
             // Load specific data based on the selected page
-            switch(targetPage) {
+            switch (targetPage) {
                 case 'cases':
                     loadCasesData();
                     break;
@@ -2221,50 +2221,50 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Add case button
     const addCaseBtn = document.getElementById('add-case-btn');
     if (addCaseBtn) {
-        addCaseBtn.addEventListener('click', function() {
+        addCaseBtn.addEventListener('click', function () {
             showCaseForm();
         });
     }
-    
+
     // Add hearing button
     const addHearingBtn = document.getElementById('add-hearing-btn');
     if (addHearingBtn) {
-        addHearingBtn.addEventListener('click', function() {
+        addHearingBtn.addEventListener('click', function () {
             showHearingForm();
         });
     }
-    
+
     // Add client button
     const addClientBtn = document.getElementById('add-client-btn');
     if (addClientBtn) {
-        addClientBtn.addEventListener('click', function() {
+        addClientBtn.addEventListener('click', function () {
             showClientForm();
         });
     }
-    
+
     // Create invoice button
     const createInvoiceBtn = document.getElementById('create-invoice-btn');
     if (createInvoiceBtn) {
-        createInvoiceBtn.addEventListener('click', function() {
+        createInvoiceBtn.addEventListener('click', function () {
             showInvoiceForm();
         });
     }
-    
+
     // Search and filter handlers
     const caseSearch = document.getElementById('case-search');
     if (caseSearch) {
-        caseSearch.addEventListener('input', function() {
+        caseSearch.addEventListener('input', function () {
             filterCases();
         });
     }
-    
+
     const caseStatusFilter = document.getElementById('case-status-filter');
     if (caseStatusFilter) {
-        caseStatusFilter.addEventListener('change', function() {
+        caseStatusFilter.addEventListener('change', function () {
             filterCases();
         });
     }

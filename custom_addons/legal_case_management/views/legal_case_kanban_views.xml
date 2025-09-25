@@ -32,7 +32,7 @@
   <record id="action_legal_case_kanban" model="ir.actions.act_window">
     <field name="name">Cases Kanban</field>
     <field name="res_model">legal.case</field>
-    <field name="view_mode">kanban,tree,form</field>
+    <field name="view_mode">kanban,form</field>
     <field name="view_ids" eval="[(5,0,0),(0,0,{'view_mode':'kanban','view_id':ref('view_legal_case_kanban')})]"/>
   </record>
 </odoo>
